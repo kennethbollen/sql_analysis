@@ -20,6 +20,33 @@ FULL JOIN RecipesExample.dbo.Ingredients AS i
 ON i.MeasureAmountID = m.MeasureAmountID
 ORDER BY r.RecipeTitle
 
+-- “What products have never been ordered?”
+
+SELECT p.ProductName, od.QuantityOrdered
+FROM SalesOrdersExample.dbo.Products AS p
+LEFT JOIN SalesOrdersExample.dbo.Order_Details AS od
+ON p.ProductNumber = od.ProductNumber
+WHERE od.QuantityOrdered IS NULL
+
+-- “Display all customers and any orders for bicycles.”
+
+SELECT c.CustLastName, SUM(RD.rev) AS cust_val
+FROM SalesOrdersExample.dbo.Customers AS c
+LEFT JOIN
+(SELECT o.CustomerID, p.ProductName, p.RetailPrice, od.QuantityOrdered, (p.RetailPrice * od.QuantityOrdered) AS rev
+FROM
+((SalesOrdersExample.dbo.Orders AS o
+INNER JOIN SalesOrdersExample.dbo.Order_Details AS od
+ON o.OrderNumber = od.OrderNumber)
+INNER JOIN SalesOrdersExample.dbo.Products AS p
+ON p.ProductNumber = od.ProductNumber)
+INNER JOIN SalesOrdersExample.dbo.Categories AS c
+ON c.CategoryID = p.CategoryID
+WHERE c.CategoryID = 2) AS RD
+ON c.CustomerID = RD.CustomerID
+GROUP BY c.CustLastName
+ORDER BY cust_val DESC
+
 -- FULL OUTER JOIN on Non-Key Values
 
 -- “Show me all the students and all the teachers and list together those who have the same first name."
@@ -31,3 +58,5 @@ SchoolSchedulingExample.dbo.Students AS s
 FULL JOIN SchoolSchedulingExample.dbo.Staff AS st
 ON s.StudFirstName = st.StfFirstName
 ORDER BY s.StudFirstName, st.StfFirstName
+
+
