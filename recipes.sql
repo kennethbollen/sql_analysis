@@ -19,3 +19,15 @@ ON m.MeasureAmountID = ri.MeasureAmountID)
 FULL JOIN RecipesExample.dbo.Ingredients AS i
 ON i.MeasureAmountID = m.MeasureAmountID
 ORDER BY r.RecipeTitle
+
+-- FULL OUTER JOIN on Non-Key Values
+
+-- “Show me all the students and all the teachers and list together those who have the same first name."
+-- full outer join students and staff on first names
+
+SELECT s.StudFirstName, s.StudLastName, st.StfFirstName, st.StfLastname
+FROM
+SchoolSchedulingExample.dbo.Students AS s
+FULL JOIN SchoolSchedulingExample.dbo.Staff AS st
+ON s.StudFirstName = st.StfFirstName
+ORDER BY s.StudFirstName, st.StfFirstName
