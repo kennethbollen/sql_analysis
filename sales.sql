@@ -6,3 +6,13 @@ FROM
 FROM SalesOrdersExample.dbo.Products AS p
 LEFT JOIN SalesOrdersExample.dbo.Product_Vendors AS pv
 ON p.ProductNumber = pv.ProductNumber) AS sub
+
+-- “List the engagement numbers that have a contract price greater than or equal to the overall average contract price.”
+
+SELECT e.EngagementNumber
+FROM EntertainmentAgencyExample.dbo.Engagements AS e
+WHERE e.ContractPrice >= 
+(SELECT AVG(e2.ContractPrice) AS avg_cont
+FROM EntertainmentAgencyExample.dbo.Engagements AS e2)
+
+
