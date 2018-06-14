@@ -15,4 +15,12 @@ WHERE e.ContractPrice >=
 (SELECT AVG(e2.ContractPrice) AS avg_cont
 FROM EntertainmentAgencyExample.dbo.Engagements AS e2)
 
+-- “How many different products were ordered on order number 553, and what was the total cost of that order?”
+
+SELECT COUNT(DISTINCT p.ProductName) AS prod_name, SUM(od.QuantityOrdered * od.QuotedPrice) AS total_cost
+FROM SalesOrdersExample.dbo.Order_Details AS od
+INNER JOIN SalesOrdersExample.dbo.Products AS p
+ON od.ProductNumber = p.ProductNumber
+WHERE od.OrderNumber = 553
+
 
