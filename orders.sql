@@ -34,6 +34,7 @@ WHERE YEAR(o.OrderDate) = 2015
 GROUP BY o.PaymentType
 
 -- The average price paid by card processor monthly in 2015 ranked by the average price paid for the year
+-- This CASE has no ELSE clause because the default is NULL which works for AVG
 
 SELECT 
 ROW_NUMBER() OVER(ORDER BY AVG(o.TotalPrice) DESC) AS ranking,
