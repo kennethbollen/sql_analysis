@@ -55,3 +55,20 @@ FROM SQLBook.dbo.Orders AS o
 WHERE YEAR(o.OrderDate) = 2015
 GROUP BY o.PaymentType
 
+-- What is the distribution of orders by state and how is this related to the state’s population?
+-- The first subquery counts the number of orders and the second calculates the population.
+-- These are combined using UNION ALL, to ensure that all states that occur in either table are included in the final result.
+
+SELECT State, SUM(num_orders) AS orders, SUM(pop) AS tot_pop
+FROM
+((SELECT o.State, COUNT(*) AS num_orders, 0 AS pop
+FROM
+SQLBook.dbo.Orders AS o
+GROUP BY o.State)
+UNION ALL
+(SELECT z.Stab, 0 AS num_orders, SUM(z.TotPop) AS pop
+FROM
+SQLBook.dbo.ZipCensus AS z
+GROUP BY z.Stab)) summary
+GROUP BY State
+ORDER BY orders DESC
