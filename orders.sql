@@ -11,7 +11,7 @@ COUNT(*) AS cnt,
 SUM(o.TotalPrice) AS rev
 FROM SQLBook.dbo.Orders AS o
 GROUP BY o.PaymentType
-ORDER BY cnt DESC
+ORDER BY cnt DESC;
 
 -- How do the number of purchases vary by month for different payment types in 2015?
 
@@ -31,7 +31,7 @@ SUM(CASE WHEN MONTH(o.OrderDate) = 11 THEN 1 ELSE 0 END) AS nov,
 SUM(CASE WHEN MONTH(o.OrderDate) = 12 THEN 1 ELSE 0 END) AS december
 FROM SQLBook.dbo.Orders AS o
 WHERE YEAR(o.OrderDate) = 2015
-GROUP BY o.PaymentType
+GROUP BY o.PaymentType;
 
 -- The average price paid by card processor monthly in 2015 ranked by the average price paid for the year
 -- This CASE has no ELSE clause because the default is NULL which works for AVG
@@ -53,7 +53,7 @@ AVG(CASE WHEN MONTH(o.OrderDate) = 11 THEN o.TotalPrice END) AS nov,
 AVG(CASE WHEN MONTH(o.OrderDate) = 12 THEN o.TotalPrice END) AS decb
 FROM SQLBook.dbo.Orders AS o
 WHERE YEAR(o.OrderDate) = 2015
-GROUP BY o.PaymentType
+GROUP BY o.PaymentType;
 
 -- What is the distribution of orders by state and how is this related to the state’s population?
 -- The first subquery counts the number of orders and the second calculates the population.
@@ -71,4 +71,5 @@ FROM
 SQLBook.dbo.ZipCensus AS z
 GROUP BY z.Stab)) summary
 GROUP BY State
-ORDER BY orders DESC
+ORDER BY orders DESC;
+
