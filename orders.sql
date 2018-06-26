@@ -73,3 +73,32 @@ GROUP BY z.Stab)) summary
 GROUP BY State
 ORDER BY orders DESC;
 
+-- What is the distribution of orders by state, for states that have more than 2% of the orders?
+SELECT
+(CASE WHEN bystate.cnt >= 0.02 * total.cnt THEN bystate.State ELSE 'OTHER' END) AS state,
+SUM(bystate.cnt) AS cnt
+FROM
+-- First subquery calculates the total orders by each state
+(SELECT o.State, COUNT(*) AS cnt
+FROM SQLBook.dbo.Orders AS o
+GROUP BY o.State) bystate
+CROSS JOIN
+-- Second subquery calculates the total orders because this only produces one row, we need to use a CROSS JOIN
+(SELECT COUNT(*) AS cnt
+FROM SQLBook.dbo.Orders) total
+GROUP BY (CASE WHEN bystate.cnt >= 0.02 * total.cnt THEN bystate.State ELSE 'OTHER' END)
+ORDER BY cnt DESC;
+
+-- What is the distribution of the number of orders in the 20 states that have the largest number of orders?
+
+SELECT
+(CASE WHEN sub.seq_num <= 20 THEN sub.State ELSE 'OTHER' END) AS state,
+SUM(sub.cnt) AS num_orders
+FROM
+(SELECT o.State, COUNT(*) AS cnt,
+ROW_NUMBER() OVER(ORDER BY COUNT(*) DESC) AS seq_num
+FROM SQLBook.dbo.Orders AS o
+GROUP BY o.State) sub
+GROUP BY (CASE WHEN sub.seq_num <= 20 THEN sub.State ELSE 'OTHER' END)
+ORDER BY num_orders DESC;
+
