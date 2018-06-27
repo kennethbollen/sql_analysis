@@ -119,4 +119,15 @@ GROUP BY o.ZipCode) sub
 GROUP BY sub.zip_cnt
 ORDER BY zip_cnt;
 
+--What is the number of order lines where the product occurs once (overall), twice, and so on?
+--Counting frequency
+SELECT sub.num_ol, COUNT(*) AS freq
+FROM
+(SELECT ol.ProductId, COUNT(*) AS num_ol
+FROM SQLBook.dbo.OrderLines AS ol
+GROUP BY ol.ProductId) AS sub
+GROUP BY sub.num_ol
+ORDER BY sub.num_ol
+
+
 
