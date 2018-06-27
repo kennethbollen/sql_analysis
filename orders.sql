@@ -109,3 +109,14 @@ FROM SQLBook.dbo.Orders AS o
 GROUP BY o.State
 ORDER BY num_orders DESC;
 
+--What is the number of zip codes that have a given number of orders?
+--Counting the frequency 
+SELECT sub.zip_cnt, COUNT(*) AS cnt 
+FROM
+(SELECT o.ZipCode, COUNT(*) AS zip_cnt
+FROM SQLBook.dbo.Orders AS o
+GROUP BY o.ZipCode) sub
+GROUP BY sub.zip_cnt
+ORDER BY zip_cnt;
+
+
