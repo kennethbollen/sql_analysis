@@ -102,3 +102,10 @@ GROUP BY o.State) sub
 GROUP BY (CASE WHEN sub.seq_num <= 20 THEN sub.State ELSE 'OTHER' END)
 ORDER BY num_orders DESC;
 
+-- Which states make up more than half the orders (Cumlative Sum)
+SELECT o.State, COUNT(*) AS num_orders,
+SUM(COUNT(*)) OVER(ORDER BY COUNT(*)) AS cumsum
+FROM SQLBook.dbo.Orders AS o
+GROUP BY o.State
+ORDER BY num_orders DESC;
+
