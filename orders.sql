@@ -129,5 +129,36 @@ GROUP BY ol.ProductId) AS sub
 GROUP BY sub.num_ol
 ORDER BY sub.num_ol
 
+-- Frequencies of Prices to create a histogram
+-- Approach is to create a range based on the number of digits, using numeric techniques
+-- Numeric technique is to count the number of no decimal digits to group numeric values into ranges
+-- For values greater than 1, the number of digits is 1+LOG / LOG base 10, rounded (Using FLOOR)
+SELECT sub.num_digits, COUNT(*) AS num_orders, MIN(sub.TotalPrice) AS min_price, MAX(sub.TotalPrice) AS max_price
+FROM
+(SELECT (CASE WHEN o.TotalPrice >= 1 
+THEN FLOOR(1 + LOG(o.TotalPrice) / LOG(10))
+WHEN -1 < o.TotalPrice AND o.TotalPrice < 1 THEN 0
+ELSE - FLOOR(1 + LOG(-o.TotalPrice) / LOG(10)) END) AS num_digits,
+o.TotalPrice
+FROM SQLBook.dbo.Orders AS o) AS sub
+GROUP BY sub.num_digits
+ORDER BY sub.num_digits DESC
 
-
+-- Turn the number of digits into a lower and upper bound (works if there are no negative values like found in price)
+-- The SIGN function returns -1,0,1 depending on whether the argument is less than zero, equal to zero or greater than zero
+SELECT
+sub.num_digits,
+SIGN(sub.num_digits) * POWER(10, sub.num_digits -1) AS lower_bound,
+POWER(10, sub.num_digits) AS upper_bound,
+COUNT(*) AS num_orders,
+MIN(sub.TotalPrice) AS min_price,
+MAX(sub.TotalPrice) AS max_price
+FROM
+(SELECT (CASE WHEN o.TotalPrice >= 1 
+THEN FLOOR(1 + LOG(o.TotalPrice) / LOG(10))
+WHEN -1 < o.TotalPrice AND o.TotalPrice < 1 THEN 0
+ELSE - FLOOR(1 + LOG(-o.TotalPrice) / LOG(10)) END) AS num_digits,
+o.TotalPrice
+FROM SQLBook.dbo.Orders AS o) AS sub
+GROUP BY sub.num_digits
+ORDER BY sub.num_digits
