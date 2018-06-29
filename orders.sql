@@ -161,4 +161,27 @@ ELSE - FLOOR(1 + LOG(-o.TotalPrice) / LOG(10)) END) AS num_digits,
 o.TotalPrice
 FROM SQLBook.dbo.Orders AS o) AS sub
 GROUP BY sub.num_digits
-ORDER BY sub.num_digits
+ORDER BY sub.num_digits;
+
+-- Placing orders into price ranges using ranges based on the number of digits with a string technique
+-- String technique utilises the calculation of the length (LEN) of the string representing the number (CAST) using only digits to the left (FLOOR)
+-- Two subqueries are used, the inner most subquery calculates the number of digits and the middle calculates the lower and upper bounds
+-- Use the SIGN function to handle cases when the number of digits is zero
+
+SELECT sub_two.lower_bound, sub_two.upper_bound, COUNT(*) AS num_orders, MIN(sub_two.val) AS min_price, MAX(sub_two.val) AS max_price
+FROM
+(SELECT 
+(FLOOR(sub_one.val / POWER(10.0, SIGN(sub_one.num_digits)*(sub_one.num_digits - 1))) *
+POWER(10.0, SIGN(sub_one.num_digits) * (sub_one.num_digits - 1))
+) AS lower_bound,
+(FLOOR(1 + (sub_one.val / POWER(10.0, SIGN(sub_one.num_digits) * (sub_one.num_digits - 1)))) *
+POWER(10.0, SIGN(sub_one.num_digits) * (sub_one.num_digits -1))
+) AS upper_bound,
+sub_one.*
+FROM
+(SELECT ROUND(LEN(CAST(FLOOR(ABS(o.TotalPrice)) AS INT)) * SIGN(FLOOR(o.TotalPrice)),1) AS num_digits, 
+o.TotalPrice AS val
+FROM SQLBook.dbo.Orders AS o) AS sub_one
+) AS sub_two
+GROUP BY sub_two.lower_bound, sub_two.upper_bound
+ORDER BY sub_two.lower_bound;
