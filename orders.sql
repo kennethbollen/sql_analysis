@@ -185,3 +185,18 @@ FROM SQLBook.dbo.Orders AS o) AS sub_one
 ) AS sub_two
 GROUP BY sub_two.lower_bound, sub_two.upper_bound
 ORDER BY sub_two.lower_bound;
+
+-- Splitting numeric values into equal sized groups/ranges
+-- Create a subquery that ranks the data by the value with ROW_NUMBER()
+-- The subquery must also contain the total of the number you need to get the % from and the value in normal form (non-ranked)
+-- The outerquery will then split the data as you wish
+SELECT 
+MAX(CASE WHEN sub.seq_num <= sub.total_orders * 0.2 THEN sub.TotalPrice END) AS break1,
+MAX(CASE WHEN sub.seq_num <= sub.total_orders * 0.4 THEN sub.TotalPrice END) AS break2,
+MAX(CASE WHEN sub.seq_num <= sub.total_orders * 0.6 THEN sub.TotalPrice END) AS break3,
+MAX(CASE WHEN sub.seq_num <= sub.total_orders * 0.8 THEN sub.TotalPrice END) AS break4
+FROM
+(SELECT ROW_NUMBER() OVER(ORDER BY o.TotalPrice) AS seq_num,
+COUNT(*) OVER() AS total_orders,
+o.TotalPrice
+FROM SQLBook.dbo.Orders AS o) AS sub;
