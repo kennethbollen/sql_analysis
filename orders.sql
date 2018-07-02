@@ -200,3 +200,16 @@ FROM
 COUNT(*) OVER() AS total_orders,
 o.TotalPrice
 FROM SQLBook.dbo.Orders AS o) AS sub;
+
+-- The frequency of the minimum and maximum values of the Total Price from Orders
+-- I create a subquery to calculate the minimum and maximum price found from all the orders
+-- The outer query uses a CASE statement to create a column with a 1 every time a row has a Total price that is equal to the min/max price, which is then summed for a total value
+-- The outer query gets the data for total price from the Orders table, which is CROSS JOIN with the sub query to match the min and max values
+-- I use a CROSS JOIN because the sub query and the outer query will have a 1-to-Many relationship
+SELECT 
+SUM(CASE WHEN o.TotalPrice = sub_o.min_price THEN 1 ELSE 0 END) AS freq_minprice,
+SUM(CASE WHEN o.TotalPrice = sub_o.max_price THEN 1 ELSE 0 END) AS freq_maxprice
+FROM SQLBook.dbo.Orders AS o
+CROSS JOIN
+(SELECT MIN(sub_o.TotalPice) AS min_price, MAX(sub_o.TotalPrice) AS max_price
+FROM SQLBook.dbo.Orders AS sub_o) AS sub
