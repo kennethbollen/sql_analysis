@@ -213,3 +213,18 @@ FROM SQLBook.dbo.Orders AS o
 CROSS JOIN
 (SELECT MIN(sub_o.TotalPice) AS min_price, MAX(sub_o.TotalPrice) AS max_price
 FROM SQLBook.dbo.Orders AS sub_o) AS sub
+
+-- What is the Mode for the states with the highest frequencies of orders
+-- Inner subquery calculates the highest frequency of orders
+-- Outer query using HAVING to match the states and their number of orders with the highest frequency of orders
+SELECT State, COUNT(*) AS mode
+FROM SQLBook.dbo.Orders 
+GROUP BY State
+HAVING COUNT(*) =
+(SELECT MAX(b.num_orders)
+FROM
+(SELECT o.State, COUNT(*) AS num_orders
+FROM SQLBook.dbo.Orders AS o
+GROUP BY o.State) b) 
+
+
