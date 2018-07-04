@@ -241,4 +241,13 @@ SUM(CASE WHEN o.City = UPPER(o.City) THEN 1 ELSE 0 END) AS upper_cnt,
 SUM(CASE WHEN o.City NOT IN (LOWER(o.City), UPPER(o.City)) THEN 1 ELSE 0 END) AS mixed_cnt
 FROM SQLBook.dbo.Orders AS o;
 
+-- evaluating the characters used and comparing any look alike characters to see if different
+-- ASCII is character encoding for standard eletronic communication
+SELECT LEFT(o.City, 1) AS first_char, ASCII(LEFT(o.City, 1)) AS ascii_char, COUNT(*) AS num_orders
+FROM SQLBook.dbo.Orders AS o
+GROUP BY LEFT(o.City, 1)
+ORDER BY num_orders DESC
+                             
+                          
+
 
