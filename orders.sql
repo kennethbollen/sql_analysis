@@ -227,4 +227,18 @@ FROM
 FROM SQLBook.dbo.Orders AS o
 GROUP BY o.State) b) 
 
+-- Data QA
+
+-- Checking if the values don't have empty space
+SELECT COUNT(*) AS num_orders
+FROM SQLBook.dbo.Orders AS o
+WHERE o.City IS NOT NULL AND LEN(o.City) = LEN(LTRIM(RTRIM(o.City)));
+
+-- Case insenstive database will have lower and upper the same and mixed as 0
+SELECT
+SUM(CASE WHEN o.City = LOWER(o.City) THEN 1 ELSE 0 END) AS lower_cnt,
+SUM(CASE WHEN o.City = UPPER(o.City) THEN 1 ELSE 0 END) AS upper_cnt,
+SUM(CASE WHEN o.City NOT IN (LOWER(o.City), UPPER(o.City)) THEN 1 ELSE 0 END) AS mixed_cnt
+FROM SQLBook.dbo.Orders AS o;
+
 
