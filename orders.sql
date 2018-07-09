@@ -248,6 +248,25 @@ FROM SQLBook.dbo.Orders AS o
 GROUP BY LEFT(o.City, 1)
 ORDER BY num_orders DESC
                              
-                          
+ -- How often are products repeated in an order?
+SELECT sub.ProductId, COUNT(*) AS cnt,
+SUM(CASE WHEN sub.num_orders > 1 THEN 1 ELSE 0 END) AS num_multi_orders
+FROM
+(SELECT ol.OrderId, ol.ProductId, COUNT(*) AS num_orders
+FROM SQLBook.dbo.OrderLines AS ol
+GROUP BY ol.OrderId, ol.ProductId) sub
+GROUP BY sub.ProductId
+ORDER BY num_multi_orders DESC;    
+
+-- Comparing the DISTINCT COUNT of Products to the total COUNT of Orders will allow for a view of Products order multiple times
+-- GROUP BY the Order ID with the COUNT of Orders and the DISTINCT COUNT of the Products
+-- Only view the COUNT of Orders that are greater than the DISTINCT COUNT of Products by using the HAVING clause
+SELECT ol.OrderID, COUNT(*) AS num_lines, COUNT(DISTINCT ol.ProductID) AS num_orders
+FROM SQLBook.dbo.Orderlines AS ol
+GROUP BY ol.OrderID
+HAVING COUNT(*) > COUNT(DISTINCT ol.ProductId)
+ORDER BY num_lines DESC;
+
+
 
 
