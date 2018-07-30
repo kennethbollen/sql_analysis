@@ -1,3 +1,8 @@
+-- Retrive information on the schema of the table for orders
+SELECT TABLE_SCHEMA + '.' + TABLE_NAME AS table_name, COLUMN_NAME
+FROM SQLBook.INFORMATION_SCHEMA.COLUMNS
+WHERE TABLE_NAME = 'orders'
+
 --Number of orders with each code
 --Number of orders whose price is in the range $0–$10, $10–$100, $100–$1,000, and over $1,000
 --Total revenue for each code
